@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start:build": "tsc -w --project tsconfig.json && npx -p tsconfig.json",
-    "build:live": "nodemon --watch 'src/' --exec node --loader ts-node/esm src/main.ts --verbose",
+    "build:live": "nodemon --watch 'src/' --exec 'node --import ts-node/register src/main.ts' --verbose",
     "start": "npm run build:live"
   },
   "keywords": [],
@@ -13,6 +13,7 @@
   "type": "module",
   "description": "",
   "dependencies": {
+    "@fastify/cookie": "^11.0.1",
     "@fastify/type-provider-typebox": "^5.1.0",
     "@prisma/client": "^6.1.0",
     "@sinclair/typebox": "^0.34.13",

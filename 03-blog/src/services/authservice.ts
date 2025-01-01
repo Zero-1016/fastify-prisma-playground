@@ -1,4 +1,5 @@
-import { duplicateVerifyUser, generateHash } from "../lib/authHelper"
+import { duplicateVerifyUser, generateAccessToken, generateHash, generateRefreshToken, verifyPassword } from "../lib/authHelper"
+import { ERROR_MESSAGE } from "../lib/constants"
 import db from "../lib/db"
 
 function authService(){
@@ -25,8 +26,52 @@ function authService(){
         }
     }
 
+    const loginWithPassword = async (email: string, pwd: string) => {
+        try {
+            const authenticationUser = await db.user.findUnique({
+                where: {
+                    email
+                },
+                select: {
+                    id: true,
+                    email: true
+                }
+            })
+        
+            if(!authenticationUser) throw ERROR_MESSAGE.unauthorized
+
+            const passwordVerification = await verifyPassword(email, pwd)
+            if(!passwordVerification) throw ERROR_MESSAGE.unauthorized
+
+            const accessToken = generateAccessToken(authenticationUser)
+            const refreshToken = generateRefreshToken(authenticationUser)
+
+            const values = {
+                userId: authenticationUser.id,
+                refreshToken: refreshToken,
+            }
+
+            await db.token.create({
+                data: values
+            })
+            
+            const returnValue = {
+                id: authenticationUser.id,
+                email: authenticationUser.email,
+                accessToken,
+                refreshToken
+            }
+            
+            return returnValue
+        }
+        catch (error) {
+            throw error
+        }
+    }
+
     return {
         register,
+        loginWithPassword
     }
 }
 
