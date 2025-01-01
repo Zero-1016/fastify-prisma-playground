@@ -69,9 +69,24 @@ function authService(){
         }
     }
 
+    const logout = async (refresh_token: string) => {
+        try {
+            const returnValue = await db.token.deleteMany({
+                where: {
+                    refreshToken: refresh_token
+                }
+            })
+
+            return returnValue
+        } catch (error) {
+            throw error
+        }
+    }
+
     return {
         register,
-        loginWithPassword
+        loginWithPassword,
+        logout
     }
 }
 
