@@ -1,10 +1,12 @@
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Fastify from 'fastify';
+import routes from './routes';
 
-const fastify = Fastify();
+const fastify = Fastify({
+    logger: true
+}).withTypeProvider<TypeBoxTypeProvider>();
 
-fastify.get('/ping', async (request, reply) => {
-    return { message: 'pong' };
-});
+fastify.register(routes)
 
 const start = async () => {
     try {
