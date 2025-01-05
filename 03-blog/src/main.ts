@@ -3,6 +3,7 @@ import Fastify from 'fastify';
 import routes from './routes';
 import fastifyCookie, { FastifyCookieOptions } from '@fastify/cookie';
 import { SECRET_KEY } from './lib/constants';
+import { currentAuthPlugin } from './plugin/authPlugin';
 
 const fastify = Fastify({
     logger: true
@@ -12,6 +13,7 @@ fastify.register(fastifyCookie, {
     secret: SECRET_KEY
 } as FastifyCookieOptions)
 
+fastify.register(currentAuthPlugin)
 fastify.register(routes)
 
 const start = async () => {

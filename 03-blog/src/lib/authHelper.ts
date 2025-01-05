@@ -75,11 +75,35 @@ const verifyRefreshToken = async (refreshToken: string) => {
     }
 }
 
+const shortVerifyRefreshToken = async (refresh_token: string) => {
+    try {
+        const decoded = jwt.verify(refresh_token, SECRET_KEY) as JwtPayload
+        if(decoded) {
+            return true
+        }else {
+            return false
+        }
+    } catch(error) {
+        throw ERROR_MESSAGE.unauthorized
+    }
+}
+
+const verifyAccessToken = async (access_token: string) => {
+    try {
+        const decoded = jwt.verify(access_token, SECRET_KEY) as JwtPayload
+        return decoded
+    } catch(error) {
+        throw ERROR_MESSAGE.invalidToken
+    }
+}
+
 export {
     generateHash,
     duplicateVerifyUser,
     verifyPassword,
     generateAccessToken,
     generateRefreshToken,
-    verifyRefreshToken
+    verifyRefreshToken,
+    shortVerifyRefreshToken,
+    verifyAccessToken
 }
