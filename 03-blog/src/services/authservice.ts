@@ -71,7 +71,7 @@ function authService(){
 
     const logout = async (refresh_token: string) => {
         try {
-            const returnValue = await db.token.deleteMany({
+            const returnValue = await db.token.delete({
                 where: {
                     refreshToken: refresh_token
                 }
