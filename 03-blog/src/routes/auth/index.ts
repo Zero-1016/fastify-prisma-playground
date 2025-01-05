@@ -1,9 +1,9 @@
 import { loginSchema, logoutSchema, refreshTokenSchema, registerSchema } from "../../schema";
 import type { TAuthBody } from "../../schema/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import authservice from "../../services/authservice";
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../lib/constants";
 import { handlerError } from "../../lib/errorHelper";
+import authservice from "../../services/authservice";
 
 const authRoute = async (fastify: FastifyInstance) => {
   fastify.post('/register', {schema: registerSchema}, async (req:FastifyRequest<{Body: TAuthBody}>, rep: FastifyReply)=>{
