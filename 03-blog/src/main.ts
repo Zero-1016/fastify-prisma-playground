@@ -4,6 +4,7 @@ import routes from './routes';
 import fastifyCookie, { FastifyCookieOptions } from '@fastify/cookie';
 import { SECRET_KEY } from './lib/constants';
 import { currentAuthPlugin } from './plugin/authPlugin';
+import { checkStartupArticle, checkStartupUser } from './startup';
 
 const fastify = Fastify({
     logger: true
@@ -18,6 +19,8 @@ fastify.register(routes)
 
 const start = async () => {
     try {
+        await checkStartupUser()
+        await checkStartupArticle()
         await fastify.listen({port: 8083})
         console.log('listening on port 8083');
     } catch (error) {
