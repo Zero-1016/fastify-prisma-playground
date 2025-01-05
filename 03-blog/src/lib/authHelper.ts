@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import db from './db';
 import { ACCESS_TOKEN_EXPIRES, ERROR_MESSAGE, REFRESH_TOKEN_EXPIRES, ROUND, SECRET_KEY } from './constants';
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 
 const generateHash = (pwd: string) => {
     const hashPwd = bcrypt.hashSync(pwd, ROUND)
@@ -55,10 +55,31 @@ const generateRefreshToken = (user: { id: number, email: string}) => {
     return refreshToken
 }
 
+const verifyRefreshToken = async (refreshToken: string) => {
+    try {
+        const decoded = jwt.verify(refreshToken, SECRET_KEY) as JwtPayload
+        const tokenFromServer = await db.token.count({
+            where: {
+                userId: decoded.id,
+                refreshToken: refreshToken,
+            },
+        })
+
+    if(tokenFromServer > 0) {
+        return decoded
+        }else {
+            throw ERROR_MESSAGE.unauthorized
+        }
+    } catch(error) {
+        throw ERROR_MESSAGE.unauthorized
+    }
+}
+
 export {
     generateHash,
     duplicateVerifyUser,
     verifyPassword,
     generateAccessToken,
     generateRefreshToken,
+    verifyRefreshToken
 }

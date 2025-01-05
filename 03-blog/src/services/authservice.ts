@@ -1,4 +1,4 @@
-import { duplicateVerifyUser, generateAccessToken, generateHash, generateRefreshToken, verifyPassword } from "../lib/authHelper"
+import { duplicateVerifyUser, generateAccessToken, generateHash, generateRefreshToken, verifyPassword, verifyRefreshToken } from "../lib/authHelper"
 import { ERROR_MESSAGE } from "../lib/constants"
 import db from "../lib/db"
 
@@ -83,10 +83,37 @@ function authService(){
         }
     }
 
+    const refresh = async (refreshToken: string) => {
+        try {
+            if(!refreshToken) throw ERROR_MESSAGE.unauthorized
+            
+            const authenticationUser = await verifyRefreshToken(refreshToken)
+
+            const userInfo = {
+                id: authenticationUser.id,
+                email: authenticationUser.email
+            }
+
+            const access_token = generateAccessToken(userInfo)
+
+            const returnValue = {
+                id: authenticationUser.id,
+                email: authenticationUser.email,
+                Authorization: access_token
+            }
+
+            return returnValue
+
+        } catch (error) {
+            throw error
+        }
+    }
+
     return {
         register,
         loginWithPassword,
-        logout
+        logout,
+        refresh
     }
 }
 

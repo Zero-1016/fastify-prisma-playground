@@ -1,4 +1,4 @@
-import { loginSchema, logoutSchema, registerSchema } from "../../schema";
+import { loginSchema, logoutSchema, refreshTokenSchema, registerSchema } from "../../schema";
 import type { TAuthBody } from "../../schema/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import authservice from "../../services/authservice";
@@ -59,6 +59,21 @@ const authRoute = async (fastify: FastifyInstance) => {
     } catch (err) {
         handlerError(rep, ERROR_MESSAGE.badRequest, err)
     }
+    })
+
+    fastify.post('/refresh', {schema: refreshTokenSchema}, async (req: FastifyRequest, rep: FastifyReply) => {
+        const refresh_token = req.cookies.refresh_token
+        if(!refresh_token) {
+            handlerError(rep, ERROR_MESSAGE.unauthorized)
+            return
+        }
+
+        try {
+            const result = await authservice.refresh(refresh_token)
+            rep.status(201).send(result)
+        } catch (err) {
+            handlerError(rep, ERROR_MESSAGE.badRequest, err)
+        }
     })
 }
 
