@@ -1,6 +1,6 @@
 import { FastifyInstance , FastifyRequest, FastifyReply } from "fastify";
-import { createArticleSchema, updateArticleSchema } from "../../schema/articleSchema";
-import { TCommonHeaders, TCommonBody } from "../../schema/types";
+import { createArticleSchema, deleteArticleSchema, updateArticleSchema } from "../../schema/articleSchema";
+import { TCommonHeaders, TCommonBody, TCommonParams } from "../../schema/types";
 import { handlerError } from "../../lib/errorHelper";
 import { ERROR_MESSAGE } from "../../lib/constants";
 import articleService from "../../services/articleService";
@@ -38,6 +38,25 @@ const articleRoute = (fastify: FastifyInstance) => {
 
             try {
                 const result = await articleService.updateArticle(articleId, userId, content, email)
+                res.status(200).send(result)
+            }catch(error){
+                handlerError(res, ERROR_MESSAGE.badRequest, error)
+            }
+        }
+    })
+
+    fastify.route({
+        method: 'DELETE',
+        schema: deleteArticleSchema,
+        url: '/:articleId',
+        preHandler: [verifySignIn],
+        handler: async (req: FastifyRequest<{ Headers: TCommonHeaders, Params: TCommonParams }>, res: FastifyReply) => {
+            const { articleId } = req.params
+            const userId = req.user!.id
+            const email = req.user!.email
+
+            try {
+                const result = await articleService.deleteArticle(Number(articleId), userId, email)
                 res.status(200).send(result)
             }catch(error){
                 handlerError(res, ERROR_MESSAGE.badRequest, error)

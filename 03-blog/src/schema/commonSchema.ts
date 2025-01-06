@@ -9,6 +9,10 @@ const commonBodySchema = Type.Object({
     content: Type.String()
 })
 
+const commonParamsSchema = Type.Object({
+    articleId: Type.String()
+})
+
 const articleSchema = Type.Object({
     id: Type.Number(),
     content: Type.String(),
@@ -23,5 +27,6 @@ const articleSchema = Type.Object({
 export {
     commonHeaderSchema,
     articleSchema,
-    commonBodySchema
+    commonBodySchema,
+    commonParamsSchema
 }

@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Fastify from 'fastify';
 import routes from './routes';
