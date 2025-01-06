@@ -1,5 +1,5 @@
 import { FastifyInstance , FastifyRequest, FastifyReply } from "fastify";
-import { createArticleSchema } from "../../schema/articleSchema";
+import { createArticleSchema, updateArticleSchema } from "../../schema/articleSchema";
 import { TCommonHeaders, TCommonBody } from "../../schema/types";
 import { handlerError } from "../../lib/errorHelper";
 import { ERROR_MESSAGE } from "../../lib/constants";
@@ -19,8 +19,28 @@ const articleRoute = (fastify: FastifyInstance) => {
 
             try {
                 const result = await articleService.createdArticle(userId, email, content)
+                res.status(200).send(result)
             }catch(error){
                 handlerError(res, error)
+            }
+        }
+    })
+
+    fastify.route({
+        method: 'PUT',
+        schema: updateArticleSchema,
+        url: '/:id',
+        preHandler: [verifySignIn],
+        handler: async (req: FastifyRequest<{ Headers: TCommonHeaders, Body: TCommonBody }>, res: FastifyReply) => {
+            const { content, articleId } = req.body
+            const userId = req.user!.id
+            const email = req.user!.email
+
+            try {
+                const result = await articleService.updateArticle(articleId, userId, content, email)
+                res.status(200).send(result)
+            }catch(error){
+                handlerError(res, ERROR_MESSAGE.badRequest, error)
             }
         }
     })

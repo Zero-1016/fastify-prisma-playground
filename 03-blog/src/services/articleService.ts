@@ -1,3 +1,5 @@
+import { verifyArticle } from "../lib/articleHelper"
+import { ERROR_MESSAGE } from "../lib/constants"
 import db from "../lib/db"
 import { getCurrentDate } from "../lib/timeHelper"
 import { TArticle } from "../schema/types"
@@ -29,8 +31,39 @@ function articleService() {
         }
     }
 
+    const updateArticle = async (articleId:number, userId:number, content:string, email:string) => {
+        try {
+            const checkVerifyUser = await verifyArticle(articleId, userId)
+
+            if(!checkVerifyUser){
+                throw ERROR_MESSAGE.badRequest
+            }
+
+            const result = await db.article.update({
+                where: {
+                    id: articleId
+                },
+                data: {
+                    content
+                }
+            })
+
+            const returnValues:TArticle = {
+                ...result,
+                userEmail: email,
+                likeMe: false,
+                createAt: result.createedAt.toString()
+            }
+
+            return returnValues
+        } catch (error) {
+            throw error
+        }
+    }
+
     return {
-        createdArticle
+        createdArticle,
+        updateArticle
     }
 }
 
