@@ -5,7 +5,6 @@ import { FIRST_PWD } from "../lib/constants"
 const checkStartupUser = async () => {
 
     const pwd = FIRST_PWD as string
-    console.log(pwd)
     const hashPwd = generateHash(pwd)
     const userCount = await db.user.count({})
 
