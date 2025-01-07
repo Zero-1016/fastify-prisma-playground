@@ -3,7 +3,7 @@ import db from './db';
 import { ACCESS_TOKEN_EXPIRES, ERROR_MESSAGE, REFRESH_TOKEN_EXPIRES, ROUND, SECRET_KEY } from './constants';
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { handlerError } from './errorHelper';
+import { handleError } from './errorHelper';
 
 const generateHash = (pwd: string) => {
     const hashPwd = bcrypt.hashSync(pwd, ROUND)
@@ -106,7 +106,7 @@ const verifySignIn = async (req: FastifyRequest, rep: FastifyReply) => {
     if(userId && email) {
         return 
     }else {
-        handlerError(rep, ERROR_MESSAGE.unauthorized)
+        handleError(rep, ERROR_MESSAGE.unauthorized)
     }
 }
 export {

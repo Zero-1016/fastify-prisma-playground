@@ -11,12 +11,13 @@ const fastify = Fastify({
     logger: true
 }).withTypeProvider<TypeBoxTypeProvider>();
 
-fastify.register(fastifyCookie, {
-    secret: SECRET_KEY
-} as FastifyCookieOptions)
 
 fastify.register(currentAuthPlugin)
 fastify.register(routes)
+
+fastify.register(fastifyCookie, {
+    secret: SECRET_KEY
+} as FastifyCookieOptions)
 
 const start = async () => {
     try {

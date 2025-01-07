@@ -4,7 +4,7 @@ import articleRoute from "./article";
 
 const routes = async (fastify: FastifyInstance) => {
     await fastify.register(authRoute, {prefix: "/auth"})
-    await fastify.register(articleRoute, {prefix: "/article"})
+    await fastify.register(articleRoute, {prefix: "/articles"})
 }
 
 export default routes;

@@ -2,8 +2,8 @@ import { loginSchema, logoutSchema, refreshTokenSchema, registerSchema } from ".
 import type { TAuthBody } from "../../schema/types";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../lib/constants";
-import { handlerError } from "../../lib/errorHelper";
-import authservice from "../../services/authservice";
+import { handleError } from "../../lib/errorHelper";
+import authservice from "../../services/authService";
 
 const authRoute = async (fastify: FastifyInstance) => {
   fastify.post('/register', {schema: registerSchema}, async (req:FastifyRequest<{Body: TAuthBody}>, rep: FastifyReply)=>{
@@ -13,7 +13,7 @@ const authRoute = async (fastify: FastifyInstance) => {
         await authservice.register(email, pwd);
         rep.status(SUCCESS_MESSAGE.registerOk.status).send(SUCCESS_MESSAGE.registerOk)
       } catch (error) {        
-        handlerError(rep, ERROR_MESSAGE.badRequest, error)
+        handleError(rep, ERROR_MESSAGE.badRequest, error)
     }
   })
 
@@ -40,14 +40,14 @@ const authRoute = async (fastify: FastifyInstance) => {
 
         rep.status(SUCCESS_MESSAGE.loginOk.status).send(result)
     } catch (err) {
-        handlerError(rep, ERROR_MESSAGE.badRequest, err)
+        handleError(rep, ERROR_MESSAGE.badRequest, err)
     }
   })
 
   fastify.delete('/logout', {schema: logoutSchema}, async (req: FastifyRequest, rep: FastifyReply) => {
     const refresh_token = req.cookies.refresh_token
     if(!refresh_token) {
-        handlerError(rep, ERROR_MESSAGE.unauthorized)
+        handleError(rep, ERROR_MESSAGE.unauthorized)
         return
     }
     try {
@@ -57,14 +57,14 @@ const authRoute = async (fastify: FastifyInstance) => {
         })
         rep.status(SUCCESS_MESSAGE.logoutOk.status).send(SUCCESS_MESSAGE.logoutOk)
     } catch (err) {
-        handlerError(rep, ERROR_MESSAGE.badRequest, err)
+        handleError(rep, ERROR_MESSAGE.badRequest, err)
     }
     })
 
     fastify.post('/refresh', {schema: refreshTokenSchema}, async (req: FastifyRequest, rep: FastifyReply) => {
         const refresh_token = req.cookies.refresh_token
         if(!refresh_token) {
-            handlerError(rep, ERROR_MESSAGE.unauthorized)
+            handleError(rep, ERROR_MESSAGE.unauthorized)
             return
         }
 
@@ -72,7 +72,7 @@ const authRoute = async (fastify: FastifyInstance) => {
             const result = await authservice.refresh(refresh_token)
             rep.status(201).send(result)
         } catch (err) {
-            handlerError(rep, ERROR_MESSAGE.badRequest, err)
+            handleError(rep, ERROR_MESSAGE.badRequest, err)
         }
     })
 }

@@ -1,9 +1,10 @@
 import { Type } from "@sinclair/typebox";
-import { articleSchema, commonHeaderSchema, commonBodySchema, commonParamsSchema } from "./commonSchema";
+import { articleSchema, commonHeadersSchema, commonBodySchema, commonParamSchema, commonPagenationSchema, commonQuerySchema } from "./commonSchema";
 
-const headers = commonHeaderSchema
+const headers = commonHeadersSchema
 const body = commonBodySchema
-const params = commonParamsSchema
+const params = commonParamSchema
+const queryString = commonQuerySchema
 
 const createArticleSchema = {
     headers,
@@ -31,8 +32,25 @@ const deleteArticleSchema = {
     }
 }
 
+const readArticleOneSchema = {
+    params,
+    response : {
+        200: articleSchema
+    }
+}
+
+const readArticlesSchema = {
+    headers,
+    queryString,
+    response : {
+        200: commonPagenationSchema
+    }
+}
+
 export {
     createArticleSchema,
     updateArticleSchema,
-    deleteArticleSchema
+    deleteArticleSchema,
+    readArticleOneSchema,
+    readArticlesSchema
 }

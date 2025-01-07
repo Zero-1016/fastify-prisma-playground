@@ -92,6 +92,11 @@ const ERROR_MESSAGE = {
     }
   } as const
 
+  const CATEGORY_TYPE = {
+    ALL: 'all',
+    MY: 'my',
+  } as const
+
   export {
     FIRST_PWD,
     ROUND,
@@ -100,4 +105,5 @@ const ERROR_MESSAGE = {
     REFRESH_TOKEN_EXPIRES,
     ERROR_MESSAGE,
     SUCCESS_MESSAGE,
+    CATEGORY_TYPE
   }

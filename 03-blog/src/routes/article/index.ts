@@ -1,68 +1,105 @@
-import { FastifyInstance , FastifyRequest, FastifyReply } from "fastify";
-import { createArticleSchema, deleteArticleSchema, updateArticleSchema } from "../../schema/articleSchema";
-import { TCommonHeaders, TCommonBody, TCommonParams } from "../../schema/types";
-import { handlerError } from "../../lib/errorHelper";
-import { ERROR_MESSAGE } from "../../lib/constants";
-import articleService from "../../services/articleService";
-import { verifySignIn } from "../../lib/authHelper";
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import { createArticleSchema, updateArticleSchema, deleteArticleSchema, readArticlesSchema, readArticleOneSchema } from '../../schema'
+import { TCommonHeaders, TCommonBody, TCommonParam, TCommonQuery } from '../../schema/types'
+import { handleError } from '../../lib/errorHelper'
+import { ERROR_MESSAGE, CATEGORY_TYPE } from '../../lib/constants'
+import articleService from '../../services/articleService'
+import { verifySignIn } from '../../lib/authHelper'
 
-const articleRoute = (fastify: FastifyInstance) => {
-    fastify.route({
-        method: 'POST',
-        schema: createArticleSchema,
-        url: '/',
-        preHandler: [verifySignIn],
-        handler: async (req: FastifyRequest<{ Headers: TCommonHeaders, Body: TCommonBody }>, res: FastifyReply) => {
-            const { content } = req.body
-            const userId = req.user!.id
-            const email = req.user!.email
+const articleRoute = async (fastify: FastifyInstance) => {
+  fastify.route({
+    method: 'POST',
+    schema: createArticleSchema,
+    url: '/',
+    preHandler: [verifySignIn],
+    handler: async (req:FastifyRequest<{Headers: TCommonHeaders, Body: TCommonBody}>, rep: FastifyReply) => {
+      const { content } = req.body
+      const userId = req.user!.id
+      const email = req.user!.email
 
-            try {
-                const result = await articleService.createdArticle(userId, email, content)
-                res.status(200).send(result)
-            }catch(error){
-                handlerError(res, error)
-            }
-        }
-    })
+      try {
+        const result = await articleService.createdArticle(userId, email, content)
+        rep.status(200).send(result)
+      }
+      catch(error) {
+        handleError(rep, ERROR_MESSAGE.badRequest, error)         
+      }
+    }
+  })
 
-    fastify.route({
-        method: 'PUT',
-        schema: updateArticleSchema,
-        url: '/:id',
-        preHandler: [verifySignIn],
-        handler: async (req: FastifyRequest<{ Headers: TCommonHeaders, Body: TCommonBody }>, res: FastifyReply) => {
-            const { content, articleId } = req.body
-            const userId = req.user!.id
-            const email = req.user!.email
+  fastify.route({
+    method: 'PUT', 
+    url: '/',
+    schema: updateArticleSchema,
+    preHandler: [verifySignIn],
+    handler: async (req: FastifyRequest<{Headers: TCommonHeaders,Body: TCommonBody }>, rep: FastifyReply) => {
+      const { articleId, content } = req.body
+      const userId = req.user!.id
+      const email = req.user!.email
 
-            try {
-                const result = await articleService.updateArticle(articleId, userId, content, email)
-                res.status(200).send(result)
-            }catch(error){
-                handlerError(res, ERROR_MESSAGE.badRequest, error)
-            }
-        }
-    })
+      try {
+        const result = await articleService.updatedArticle(articleId, content, userId, email)
+        rep.status(200).send(result)
+      }
+      catch(error) {
+        handleError(rep, ERROR_MESSAGE.badRequest, error)      
+      }
+    }
+  })
 
-    fastify.route({
-        method: 'DELETE',
-        schema: deleteArticleSchema,
-        url: '/:articleId',
-        preHandler: [verifySignIn],
-        handler: async (req: FastifyRequest<{ Headers: TCommonHeaders, Params: TCommonParams }>, res: FastifyReply) => {
-            const { articleId } = req.params
-            const userId = req.user!.id
-            const email = req.user!.email
+  fastify.route({
+    method: 'DELETE',
+    url: '/:articleId',
+    schema: deleteArticleSchema,
+    preHandler: [verifySignIn],
+    handler: async (req: FastifyRequest<{Headers: TCommonHeaders, Params: TCommonParam}>, rep: FastifyReply) => {
+      const { articleId } = req.params
+      const userId = req.user!.id
 
-            try {
-                const result = await articleService.deleteArticle(Number(articleId), userId, email)
-                res.status(200).send(result)
-            }catch(error){
-                handlerError(res, ERROR_MESSAGE.badRequest, error)
-            }
-        }
-    })
+      try {
+        const result = await articleService.deletedArticle(Number(articleId), userId)
+        rep.status(200).send(result)
+      }
+      catch(error) {
+        handleError(rep, ERROR_MESSAGE.badRequest, error)
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/:articleId',
+    schema: readArticleOneSchema,
+    handler: async (req: FastifyRequest<{Params: TCommonParam}>, rep: FastifyReply) => {
+      const { articleId } = req.params
+
+      try {
+        const result = await articleService.readArticleOne(Number(articleId))
+        rep.status(200).send(result)
+      }
+      catch(error) {
+        handleError(rep, ERROR_MESSAGE.badRequest, error)      
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url:'/',
+    schema: readArticlesSchema,
+    handler: async (req:FastifyRequest<{Headers: TCommonHeaders, Querystring: TCommonQuery}>, rep: FastifyReply) => {
+      const { pageNumber = 0, mode = CATEGORY_TYPE.ALL } = req.query
+      const userId = req.user?.id
+
+      try {
+        const result = await articleService.readArticlesList(pageNumber, mode, userId)
+        rep.status(200).send(result)
+      }
+      catch(error) {
+        handleError(rep, ERROR_MESSAGE.badRequest, error)
+      }
+    }
+  })   
 }
 
-export default articleRoute;
+export default articleRoute

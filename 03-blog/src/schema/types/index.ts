@@ -1,17 +1,21 @@
-import { Static } from "@sinclair/typebox";
-import { authBodySchema } from "../authSchema";
-import { commonBodySchema, commonHeaderSchema, articleSchema, commonParamsSchema } from "../commonSchema";
+import { Static } from '@sinclair/typebox'
+import { authBodySchema } from '../authSchema'
+import { commonHeadersSchema, articleSchema, commonBodySchema, commonParamSchema, commonQuerySchema, commonPagenationSchema } from '../commonSchema'
 
 type TAuthBody = Static<typeof authBodySchema>
-type TCommonHeaders = Static<typeof commonHeaderSchema>
-type TCommonBody = Static<typeof commonBodySchema>
-type TCommonParams = Static<typeof commonParamsSchema>
+type TCommonHeaders = Static<typeof commonHeadersSchema>
 type TArticle = Static<typeof articleSchema>
+type TCommonBody = Static<typeof commonBodySchema>
+type TCommonParam = Static<typeof commonParamSchema>
+type TCommonQuery = Static<typeof commonQuerySchema>
+type TCommonPagenation = Static<typeof commonPagenationSchema>
 
 export {
-    TAuthBody,
-    TCommonHeaders,
-    TCommonBody,
-    TArticle,
-    TCommonParams
+	TAuthBody,
+	TCommonHeaders,
+	TArticle,
+	TCommonBody,
+	TCommonParam,
+	TCommonQuery,
+	TCommonPagenation,	
 }
