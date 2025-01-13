@@ -6,9 +6,14 @@ import fastifyCookie, { FastifyCookieOptions } from '@fastify/cookie';
 import { SECRET_KEY } from './lib/constants';
 import { currentAuthPlugin } from './plugin/authPlugin';
 import { checkStartupArticle, checkStartupUser } from './startup';
+import fs from 'fs';
 
 const fastify = Fastify({
-    logger: true
+    logger: true,
+    // https: {
+    //     key: fs.readFileSync('./server.key'),
+    //     cert: fs.readFileSync('./server.crt')
+    // }
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 
@@ -16,7 +21,7 @@ fastify.register(currentAuthPlugin)
 fastify.register(routes)
 
 fastify.register(fastifyCookie, {
-    secret: SECRET_KEY
+    secret: SECRET_KEY,
 } as FastifyCookieOptions)
 
 const start = async () => {
