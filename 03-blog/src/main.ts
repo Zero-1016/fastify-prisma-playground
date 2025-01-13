@@ -6,7 +6,8 @@ import fastifyCookie, { FastifyCookieOptions } from '@fastify/cookie';
 import { SECRET_KEY } from './lib/constants';
 import { currentAuthPlugin } from './plugin/authPlugin';
 import { checkStartupArticle, checkStartupUser } from './startup';
-import fs from 'fs';
+import cors from '@fastify/cors';
+
 
 const fastify = Fastify({
     logger: true,
@@ -19,6 +20,10 @@ const fastify = Fastify({
 
 fastify.register(currentAuthPlugin)
 fastify.register(routes)
+fastify.register(cors, {
+    origin: true, // 모든 출처 허용
+    credentials: true // 프론트엔드에서 axios나 fetch 사용 시 withCredentials: true 설정 필요
+})
 
 fastify.register(fastifyCookie, {
     secret: SECRET_KEY,
